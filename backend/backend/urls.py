@@ -15,8 +15,26 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include, re_path
+from django.conf import settings
+from django.conf.urls.static import static
+
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/auth/', include('djoser.urls')),          # Djoser URLs for user management
+    path('api/auth/', include('djoser.urls.jwt')),      # Djoser JWT URLs
+    # path('api/', include('accounts.urls')),             # Include app-specific URLs
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+urlpatterns += [
+    # OpenAPI 3 schema (JSON)
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+
+    # Swagger UI (interactive docs)
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+
+    # ReDoc UI (alternative docs)
+    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
