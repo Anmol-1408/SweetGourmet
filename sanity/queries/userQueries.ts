@@ -24,8 +24,11 @@ export const USER_BY_CLERK_ID_QUERY = `
       city,
       state,
       zip,
+      country,
       default,
-      createdAt
+      type,
+      createdAt,
+      phone
     },
     preferences,
     wishlist[] -> {

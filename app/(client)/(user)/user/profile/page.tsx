@@ -60,8 +60,9 @@ export default async function ProfilePage() {
     const { data } = await sanityFetch({
       query: USER_BY_CLERK_ID_QUERY,
       params: { clerkUserId: userId },
+      stega: false,
     });
-    sanityUser = data;
+    sanityUser = data as SanityUser | null;
   } catch (error) {
     console.error("Error fetching user from Sanity:", error);
   }
