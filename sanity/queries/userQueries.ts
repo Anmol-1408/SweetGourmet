@@ -295,13 +295,74 @@ export const getUserOrders = async (clerkUserId: string) => {
   }
 };
 
+type OrderByIdResult = {
+  _id: string;
+  orderNumber: string;
+  clerkUserId: string;
+  customerName: string;
+  email: string;
+  products: Array<{
+    product: {
+      _id: string;
+      name: string;
+      slug?: { current: string };
+      image?: { asset: { url: string } };
+      images?: Array<{
+        _type: "image";
+        asset?: { _ref: string; _type: "reference" };
+      }>;
+      price: number;
+      currency: string;
+      categories?: Array<{ title: string }>;
+    };
+    quantity: number;
+  }>;
+  subtotal: number;
+  tax: number;
+  shipping: number;
+  totalPrice: number;
+  currency: string;
+  amountDiscount: number;
+  address: {
+    name: string;
+    address: string;
+    city: string;
+    state: string;
+    zip: string;
+  };
+  status: string;
+  paymentStatus: string;
+  paymentMethod: string;
+  orderDate: string;
+  invoice?: {
+    id: string;
+    number: string;
+    hosted_invoice_url: string;
+  };
+  stripeCheckoutSessionId?: string;
+  stripePaymentIntentId?: string;
+  paymentCompletedAt?: string;
+  addressConfirmedBy?: string;
+  addressConfirmedAt?: string;
+  orderConfirmedBy?: string;
+  orderConfirmedAt?: string;
+  packedBy?: string;
+  packedAt?: string;
+  assignedDeliverymanName?: string;
+  dispatchedAt?: string;
+  cashCollectedAt?: string;
+  paymentReceivedAt?: string;
+  deliveredBy?: string;
+  deliveredAt?: string;
+};
+
 export const getOrderById = async (orderId: string) => {
   try {
     const { data } = await sanityFetch({
       query: ORDER_BY_ID_QUERY,
       params: { orderId },
     });
-    return data;
+    return data as unknown as OrderByIdResult | null;
   } catch (error) {
     console.error("Error fetching order by ID:", error);
     return null;

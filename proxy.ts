@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 
 const isProtectedRoute = createRouteMatcher([
   "/user(.*)",
-  "/cart(.*)",
   "/wishlist(.*)",
   "/success(.*)",
   "/checkout(.*)",
@@ -35,7 +34,10 @@ const isUserAdmin = (userEmail: string | null | undefined): boolean => {
 };
 
 export default clerkMiddleware(async (auth, req) => {
-  if (isProtectedRoute(req)) {
+  const isCombinedUserDataApi =
+    req.nextUrl.pathname === "/api/user/combined-data";
+
+  if (isProtectedRoute(req) && !isCombinedUserDataApi) {
     await auth.protect();
   }
 
