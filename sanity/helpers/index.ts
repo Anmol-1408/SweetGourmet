@@ -108,6 +108,7 @@ export const getMyOrders = async (
           start: offset,
           end: offset + limit - 1,
         },
+        stega: false,
       }),
       sanityFetch({
         query: COUNT_QUERY,
