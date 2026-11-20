@@ -316,6 +316,7 @@ const getProductBySlug = unstable_cache(
         params: {
           slug,
         },
+        stega: false,
       });
       return product?.data || null;
     } catch (error) {
