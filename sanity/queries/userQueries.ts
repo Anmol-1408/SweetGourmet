@@ -1,5 +1,159 @@
 import { sanityFetch } from "../lib/live";
 
+type UserByClerkIdResult = {
+  _id: string;
+  _type: "user";
+  clerkUserId: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  dateOfBirth?: string;
+  profileImage?: { asset?: { _id: string; url: string } };
+  addresses?: Array<{
+    _id: string;
+    name?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    zip?: string;
+    country?: string;
+    default?: boolean;
+    type?: "home" | "office" | "other";
+    createdAt?: string;
+    phone?: string;
+  }>;
+  preferences?: Record<string, unknown>;
+  wishlist?: Array<{
+    _id: string;
+    name?: string;
+    slug?: { current?: string };
+    image?: { asset?: { _id: string; url: string } };
+    price?: number;
+    currency?: string;
+  }>;
+  cart?: Array<{
+    product?: {
+      _id: string;
+      name?: string;
+      slug?: { current?: string };
+      image?: { asset?: { _id: string; url: string } };
+      price?: number;
+      currency?: string;
+      inStock?: boolean;
+      stockQuantity?: number;
+    } | null;
+    quantity?: number;
+    size?: string;
+    color?: string;
+    addedAt?: string;
+  }>;
+  orders?: Array<{
+    _id: string;
+    orderNumber?: string;
+    totalPrice?: number;
+    currency?: string;
+    status?: string;
+    orderDate?: string;
+  }>;
+  loyaltyPoints?: number;
+  rewardPoints?: number;
+  totalSpent?: number;
+  lastLogin?: string;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  walletBalance?: number;
+};
+
+type UserAddressResult = {
+  _id: string;
+  name?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
+  default?: boolean;
+  createdAt?: string;
+};
+
+type UserCartResult = {
+  cart?: Array<{
+    product?: {
+      _id: string;
+      name?: string;
+      slug?: { current?: string };
+      image?: { asset?: { _id: string; url: string } };
+      price?: number;
+      currency?: string;
+      inStock?: boolean;
+      stockQuantity?: number;
+      categories?: Array<{ name?: string }>;
+    } | null;
+    quantity?: number;
+    size?: string;
+    color?: string;
+    addedAt?: string;
+  }>;
+} | null;
+
+type UserWishlistResult = {
+  wishlist?: Array<{
+    _id: string;
+    name?: string;
+    slug?: { current?: string };
+    image?: { asset?: { _id: string; url: string } };
+    price?: number;
+    currency?: string;
+    inStock?: boolean;
+    categories?: Array<{ name?: string }>;
+  }>;
+} | null;
+
+type UserOrderResult = {
+  _id: string;
+  orderNumber: string;
+  products?: Array<{
+    product?: {
+      _id: string;
+      name?: string;
+      image?: { asset?: { _id: string; url: string } };
+      price?: number;
+      currency?: string;
+    } | null;
+    quantity?: number;
+  }>;
+  totalPrice?: number;
+  currency?: string;
+  amountDiscount?: number;
+  address?: Record<string, unknown>;
+  status: string;
+  orderDate: string;
+  invoice?: Record<string, unknown>;
+};
+
+type UserNotification = {
+  id: string;
+  title: string;
+  message: string;
+  type?: string;
+  read?: boolean;
+  priority?: string;
+  sentAt: string;
+  readAt?: string;
+  sentBy?: string;
+  actionUrl?: string;
+};
+
+type UserNotificationsResult = {
+  notifications?: UserNotification[];
+} | null;
+
+type UserNotificationsDocumentResult = {
+  _id: string;
+  notifications?: UserNotification[];
+} | null;
+
 // User Queries
 export const USER_BY_CLERK_ID_QUERY = `
   *[_type == "user" && clerkUserId == $clerkUserId][0] {
@@ -238,8 +392,9 @@ export const getUserByClerkId = async (clerkUserId: string) => {
     const { data } = await sanityFetch({
       query: USER_BY_CLERK_ID_QUERY,
       params: { clerkUserId },
+      stega: false,
     });
-    return data;
+    return data as unknown as UserByClerkIdResult | null;
   } catch (error) {
     console.error("Error fetching user by Clerk ID:", error);
     return null;
@@ -251,8 +406,9 @@ export const getUserAddresses = async (userId: string) => {
     const { data } = await sanityFetch({
       query: USER_ADDRESSES_QUERY,
       params: { userId },
+      stega: false,
     });
-    return data ?? [];
+    return (data ?? []) as unknown as UserAddressResult[];
   } catch (error) {
     console.error("Error fetching user addresses:", error);
     return [];
@@ -264,8 +420,10 @@ export const getUserCart = async (clerkUserId: string) => {
     const { data } = await sanityFetch({
       query: USER_CART_QUERY,
       params: { clerkUserId },
+      stega: false,
     });
-    return data?.cart ?? [];
+    const user = data as unknown as UserCartResult;
+    return user?.cart ?? [];
   } catch (error) {
     console.error("Error fetching user cart:", error);
     return [];
@@ -277,8 +435,10 @@ export const getUserWishlist = async (clerkUserId: string) => {
     const { data } = await sanityFetch({
       query: USER_WISHLIST_QUERY,
       params: { clerkUserId },
+      stega: false,
     });
-    return data?.wishlist ?? [];
+    const user = data as unknown as UserWishlistResult;
+    return user?.wishlist ?? [];
   } catch (error) {
     console.error("Error fetching user wishlist:", error);
     return [];
@@ -290,8 +450,9 @@ export const getUserOrders = async (clerkUserId: string) => {
     const { data } = await sanityFetch({
       query: USER_ORDERS_QUERY,
       params: { clerkUserId },
+      stega: false,
     });
-    return data ?? [];
+    return (data ?? []) as unknown as UserOrderResult[];
   } catch (error) {
     console.error("Error fetching user orders:", error);
     return [];
@@ -364,6 +525,7 @@ export const getOrderById = async (orderId: string) => {
     const { data } = await sanityFetch({
       query: ORDER_BY_ID_QUERY,
       params: { orderId },
+      stega: false,
     });
     return data as unknown as OrderByIdResult | null;
   } catch (error) {
@@ -395,8 +557,10 @@ export const getUserNotifications = async (clerkUserId: string) => {
     const { data } = await sanityFetch({
       query: USER_NOTIFICATIONS_QUERY,
       params: { clerkUserId },
+      stega: false,
     });
-    return data?.notifications || [];
+    const user = data as unknown as UserNotificationsResult;
+    return user?.notifications ?? [];
   } catch (error) {
     console.error("Error fetching user notifications:", error);
     return [];
@@ -418,29 +582,29 @@ export const markNotificationAsRead = async (
     const user = await sanityFetch({
       query: MARK_NOTIFICATION_READ_QUERY,
       params: { clerkUserId },
+      stega: false,
     });
 
-    if (!user.data) {
+    const userData = user.data as unknown as UserNotificationsDocumentResult;
+    if (!userData) {
       throw new Error("User not found");
     }
 
-    const updatedNotifications = user.data.notifications.map(
-      (notification: any) => {
-        if (notification.id === notificationId) {
-          return {
-            ...notification,
-            read: true,
-            readAt: new Date().toISOString(),
-          };
-        }
-        return notification;
-      }
+    const updatedNotifications = (userData.notifications ?? []).map(
+      (notification) =>
+        notification.id === notificationId
+          ? {
+              ...notification,
+              read: true,
+              readAt: new Date().toISOString(),
+            }
+          : notification
     );
 
     const { writeClient } = await import("../lib/client");
 
     await writeClient
-      .patch(user.data._id)
+      .patch(userData._id)
       .set({ notifications: updatedNotifications })
       .commit();
 
@@ -459,20 +623,22 @@ export const deleteUserNotification = async (
     const user = await sanityFetch({
       query: MARK_NOTIFICATION_READ_QUERY,
       params: { clerkUserId },
+      stega: false,
     });
 
-    if (!user.data) {
+    const userData = user.data as unknown as UserNotificationsDocumentResult;
+    if (!userData) {
       throw new Error("User not found");
     }
 
-    const updatedNotifications = user.data.notifications.filter(
-      (notification: any) => notification.id !== notificationId
+    const updatedNotifications = (userData.notifications ?? []).filter(
+      (notification) => notification.id !== notificationId
     );
 
     const { writeClient } = await import("../lib/client");
 
     await writeClient
-      .patch(user.data._id)
+      .patch(userData._id)
       .set({ notifications: updatedNotifications })
       .commit();
 
