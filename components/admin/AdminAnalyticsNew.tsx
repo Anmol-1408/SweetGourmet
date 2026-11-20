@@ -461,9 +461,11 @@ const AdminAnalytics = () => {
                       <YAxis />
                       <Tooltip
                         formatter={(value, name) => [
-                          name === "revenue"
-                            ? `$${value.toLocaleString()}`
-                            : value,
+                          value == null
+                            ? ""
+                            : name === "revenue"
+                              ? `$${value.toLocaleString()}`
+                              : value,
                           name === "revenue" ? "Revenue" : "Sales",
                         ]}
                       />
