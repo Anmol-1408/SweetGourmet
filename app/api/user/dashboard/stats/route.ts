@@ -7,31 +7,6 @@ import {
   getUserByClerkId,
 } from "@/sanity/queries/userQueries";
 
-interface Notification {
-  read: boolean;
-  id: string;
-  title: string;
-  message: string;
-  sentAt: string;
-}
-
-interface Order {
-  _id: string;
-  orderNumber: string;
-  orderDate: string;
-  status: string;
-  totalPrice?: number;
-}
-
-interface WishlistItem {
-  _id: string;
-  addedAt: string;
-  name?: string;
-  product?: {
-    name: string;
-  };
-}
-
 export async function GET(request: NextRequest) {
   try {
     const user = await currentUser();
@@ -55,7 +30,8 @@ export async function GET(request: NextRequest) {
       wishlistCount: userWishlist?.length || 0,
       notificationsCount: userNotifications?.length || 0,
       unreadNotifications:
-        userNotifications?.filter((n: Notification) => !n.read)?.length || 0,
+        userNotifications?.filter((notification) => !notification.read)
+          .length || 0,
       rewardPoints: userData?.rewardPoints || 0,
       walletBalance: userData?.walletBalance || 0,
     };
@@ -67,12 +43,12 @@ export async function GET(request: NextRequest) {
     if (userOrders && userOrders.length > 0) {
       const recentOrders = userOrders
         .sort(
-          (a: Order, b: Order) =>
+          (a, b) =>
             new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime()
         )
         .slice(0, 2);
 
-      recentOrders.forEach((order: Order) => {
+      recentOrders.forEach((order) => {
         recentActivity.push({
           id: `order-${order._id}`,
           title: `Order ${
@@ -113,12 +89,12 @@ export async function GET(request: NextRequest) {
     if (userNotifications && userNotifications.length > 0) {
       const recentNotifications = userNotifications
         .sort(
-          (a: Notification, b: Notification) =>
+          (a, b) =>
             new Date(b.sentAt).getTime() - new Date(a.sentAt).getTime()
         )
         .slice(0, 1);
 
-      recentNotifications.forEach((notification: Notification) => {
+      recentNotifications.forEach((notification) => {
         recentActivity.push({
           id: `notification-${notification.id}`,
           title: notification.title,
