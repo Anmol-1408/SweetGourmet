@@ -6,11 +6,6 @@ import {
   deleteUserNotification,
 } from "@/sanity/queries/userQueries";
 
-interface UserNotification {
-  sentAt: string;
-  read: boolean;
-}
-
 export async function GET(request: NextRequest) {
   try {
     const user = await currentUser();
@@ -23,14 +18,14 @@ export async function GET(request: NextRequest) {
 
     // Sort notifications by date (newest first)
     const sortedNotifications = notifications.sort(
-      (a: UserNotification, b: UserNotification) =>
+      (a, b) =>
         new Date(b.sentAt).getTime() - new Date(a.sentAt).getTime()
     );
 
     return NextResponse.json({
       success: true,
       notifications: sortedNotifications,
-      unreadCount: notifications.filter((n: UserNotification) => !n.read)
+      unreadCount: notifications.filter((notification) => !notification.read)
         .length,
     });
   } catch (error) {
