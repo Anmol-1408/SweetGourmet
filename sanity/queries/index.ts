@@ -94,7 +94,10 @@ const getAllProducts = unstable_cache(
 const getDealProducts = unstable_cache(
   async () => {
     try {
-      const { data } = await sanityFetch({ query: DEAL_PRODUCTS });
+      const { data } = await sanityFetch({
+        query: DEAL_PRODUCTS,
+        stega: false,
+      });
       return data ?? [];
     } catch (error) {
       console.log("Error fetching deal products:", error);
