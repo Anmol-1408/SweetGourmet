@@ -20,6 +20,7 @@ import {
   SINGLE_BLOG_QUERY,
 } from "./query";
 import { getOrderById } from "./userQueries";
+import type { Category } from "@/sanity.types";
 
 // ============================================================================
 // CACHED DATA FETCHERS - Next.js 16 Caching Revolution
@@ -259,7 +260,7 @@ const getAddresses = async () => {
  * Category structure is relatively static
  */
 const getCategories = unstable_cache(
-  async (quantity?: number) => {
+  async (quantity?: number): Promise<Category[]> => {
     try {
       const query = quantity
         ? `*[_type == 'category'] | order(name asc) [0...$quantity] {
@@ -274,9 +275,10 @@ const getCategories = unstable_cache(
       const { data } = await sanityFetch({
         query,
         params: quantity ? { quantity } : {},
+        stega: false,
       });
 
-      return data ?? [];
+      return (data ?? []) as unknown as Category[];
     } catch (error) {
       console.log("Error fetching categories with product count:", error);
       return [];
