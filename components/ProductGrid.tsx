@@ -48,12 +48,12 @@ const ProductGrid = () => {
   const [stockStatus, setStockStatus] = useState<string>("all");
   const [rating, setRating] = useState<string>("all");
 
-  const query = `*[_type == "product" && variant == $variant] | order(${getSortQuery(
+  const query = `*[_type == "product" && variant == $productVariant] | order(${getSortQuery(
     sortBy
   )}){
   ...,"categories": categories[]->title
 }`;
-  const params = { variant: selectedTab };
+  const params = { productVariant: selectedTab };
 
   function getSortQuery(sort: SortOption): string {
     switch (sort) {
