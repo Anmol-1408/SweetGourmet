@@ -76,7 +76,10 @@ const getFeaturedCategory = unstable_cache(
 const getAllProducts = unstable_cache(
   async () => {
     try {
-      const { data } = await sanityFetch({ query: ALL_PRODUCTS_QUERY });
+      const { data } = await sanityFetch({
+        query: ALL_PRODUCTS_QUERY,
+        stega: false,
+      });
       return data ?? [];
     } catch (error) {
       console.log("Error fetching all products:", error);
